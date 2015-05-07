@@ -13,7 +13,9 @@ public class ProfileDAOImpl implements ProfileDAO{
 	}
 	@Override
 	public long createProfile(Profile profile) {
-		// TODO Auto-generated method stub
+		String sql = "INSERT INTO profiles (profile_id, first_name, last_name, email) "+
+					  "VALUES (uuid_generate_v4(), ?, ?, ?)"; //RETURNING user_id
+		jdbcTemplate.update(sql, profile.getFirstName(), profile.getLastName(), profile.getEmail());
 		return 0;
 	}
 

@@ -1,25 +1,41 @@
 package main;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.core.JdbcTemplate;
+import javax.sql.DataSource;
 
-@SpringBootApplication
-public class App implements CommandLineRunner {	
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+
+import profile.ProfileDAO;
+import profile.ProfileDAOImpl;
+
+@Configuration
+@ComponentScan
+@EnableAutoConfiguration
+public class App {	
 
 public static void main(String args[]){
 		SpringApplication.run(App.class, args);
 }
 
-@Autowired
-JdbcTemplate jdbcTemplate;
-
-public void run(String...strings){
-	System.out.println("In Application run...");
-	String sql = "INSERT INTO profiles (profile_id, first_name, last_name, email) "+
-	"VALUES (uuid_generate_v4(), ?, ?, ?)";
-	jdbcTemplate.update(sql);
+@Bean
+public DataSource getDataSource(){
+	DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	dataSource.setDriverClassName("org.postgresql.Driver");
+	dataSource.setUrl("jdbc:postgresql://localhost:5432/testimonials");
+	dataSource.setUsername("sabertooth");
+	dataSource.setPassword("sabertooth");
+	
+	return dataSource;
 }
+
+@Bean
+public ProfileDAO getProfileDAO(){
+	return new ProfileDAOImpl( getDataSource() );
+}
+
 }
